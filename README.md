@@ -92,8 +92,8 @@ The system is built using a microservices architecture with the following compon
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/interactive-brokers-web-api-2.git
-cd interactive-brokers-web-api-2
+git clone https://github.com/kihiu-ho/LLM.Trading.Bot.IBKR.N8N/
+cd LLM.Trading.Bot.IBKR.N8N/
 ```
 
 2. Install dependencies:
