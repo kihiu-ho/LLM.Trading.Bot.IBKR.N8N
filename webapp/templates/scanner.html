@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Market Scanner</title></head>
+<body>
+    <h1>Market Scanner</h1>
+    <p><a href="/">Back to Dashboard</a></p>
+    <form method="POST">
+        <label>Instrument: <input type="text" name="instrument" value="STK"></label><br>
+        <label>Location: <input type="text" name="location" value="STK.US"></label><br>
+        <label>Type: <input type="text" name="type" value="TOP_PERC_GAIN"></label><br>
+        <label>Filter Code: <input type="text" name="filter_code" value="priceAbove"></label><br>
+        <label>Filter Value: <input type="number" name="filter_value" value="10"></label><br>
+        <button type="submit">Run Scanner</button>
+    </form>
+    {% if results %}
+        <h2>Results</h2>
+        <pre>{{ results | tojson }}</pre>
+    {% endif %}
+    <h2>Parameters</h2>
+    <pre>{{ params | tojson }}</pre>
+</body>
+</html>

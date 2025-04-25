@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Positions</title></head>
+<body>
+    <h1>Positions</h1>
+    <p><a href="/">Back to Dashboard</a></p>
+    <table border="1">
+        <tr><th>Contract ID</th><th>Symbol</th><th>Position</th><th>Market Value</th></tr>
+        {% for pos in positions %}
+            <tr>
+                <td>{{ pos.conid }}</td>
+                <td>{{ pos.symbol }}</td>
+                <td>{{ pos.position }}</td>
+                <td>{{ pos.mktValue }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

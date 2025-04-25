@@ -1,0 +1,121 @@
+services:
+  ibkr-n8n-combined:
+    build:
+      context: .
+      dockerfile: Dockerfile.combined
+    container_name: ibkr-n8n-combined-1
+    environment:
+      IBKR_USERNAME: ${IBKR_USERNAME}
+      IBKR_PASSWORD: ${IBKR_PASSWORD}
+      IBKR_ACCOUNT_ID: ${IBKR_ACCOUNT_ID}
+      N8N_HOST: ${N8N_HOST:-0.0.0.0}
+      N8N_PORT: ${N8N_PORT:-5678}
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      NODE_ENV: ${NODE_ENV:-production}
+      N8N_SECURE_COOKIE: true
+      WEBHOOK_URL: "https://localhost:5679"
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      NOCODB_API_TOKEN: ${NOCODB_API_TOKEN}
+      NOCODB_PROJECT_ID: ${NOCODB_PROJECT_ID}
+      NOCODB_TABLE_ID: ${NOCODB_TABLE_ID}
+    ports:
+      - "5055:5000"  # IBKR Gateway
+      - "5056:5056"  # Flask
+    volumes:
+      - ./data/n8n:/root/.n8n  # Local directory for n8n data
+      - ./webapp/app.py:/app/webapp/app.py
+
+  n8n-nginx-proxy:
+    image: nginx:stable-alpine
+    container_name: n8n-nginx-proxy
+    depends_on:
+      - ibkr-n8n-combined
+    ports:
+      - "5679:443"
+    volumes:
+      - ./webapp/cert.pem:/etc/nginx/certs/cert.pem:ro
+      - ./webapp/key.pem:/etc/nginx/certs/key.pem:ro
+      - ./n8n-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  nocodb:
+    image: nocodb/nocodb:latest
+    container_name: nocodb
+    depends_on:
+      nocodb-db:
+        condition: service_healthy
+    environment:
+      NC_DB_URL_PG: "postgres://nocodb:nocodb_password@nocodb-db:5432/nocodb"
+      NC_PUBLIC_URL: "https://localhost:5443"
+    volumes:
+      - ./data/nocodb:/usr/app/data  # Local directory for nocodb data
+
+  nocodb-db:
+    image: postgres:16-alpine
+    container_name: nocodb-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: nocodb
+      POSTGRES_USER: nocodb
+      POSTGRES_PASSWORD: nocodb_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nocodb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data/pgdata  # Local directory for postgres data
+
+  nocodb-nginx-proxy:
+    image: nginx:stable-alpine
+    container_name: nocodb-nginx-proxy
+    depends_on:
+      - nocodb
+    ports:
+      - "5448:443"
+    volumes:
+      - ./webapp/cert.pem:/etc/nginx/certs/cert.pem:ro
+      - ./webapp/key.pem:/etc/nginx/certs/key.pem:ro
+      - ./nocodb-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: flowise
+    environment:
+      PORT: 3000
+      FLOWISE_USERNAME: ${FLOWISE_USERNAME}
+      FLOWISE_PASSWORD: ${FLOWISE_PASSWORD}
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./data/flowise:/root/.flowise  # Local directory for flowise data
+
+  flowise-nginx-proxy:
+    image: nginx:stable-alpine
+    container_name: flowise-nginx-proxy
+    depends_on:
+      - flowise
+    ports:
+      - "9443:443"
+    volumes:
+      - ./webapp/cert.pem:/etc/nginx/certs/cert.pem:ro
+      - ./webapp/key.pem:/etc/nginx/certs/key.pem:ro
+      - ./flowise-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9003:9000"  # MinIO API
+      - "9004:9001"  # MinIO Console
+    command: server /data --console-address ":9001" --address ":9000"
+    volumes:
+      - ./data/minio:/data
+      - ./webapp/cert.pem:/etc/minio/certs/public.crt
+      - ./webapp/key.pem:/etc/minio/certs/private.key

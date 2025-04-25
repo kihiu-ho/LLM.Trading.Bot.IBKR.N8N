@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Symbol Search</title>
+</head>
+<body>
+    <h1>Search Stock Symbols</h1>
+    <p><a href="/">Back to Dashboard</a></p>
+
+    <form method="GET">
+        <input type="text" name="symbol" placeholder="Enter symbol (e.g., AAPL)" value="{{ request.args.get('symbol', '') }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    {% if stocks %}
+        <h2>Results</h2>
+        <table border="1">
+            <tr>
+                <th>Contract ID</th>
+                <th>Symbol</th>
+                <th>Description</th>
+            </tr>
+            {% for stock in stocks %}
+                <tr>
+                    <td>{{ stock.conid }}</td>
+                    <td>{{ stock.symbol }}</td>
+                    <td>{{ stock.description }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>

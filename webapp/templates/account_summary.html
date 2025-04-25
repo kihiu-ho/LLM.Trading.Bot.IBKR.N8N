@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Account Summary</title></head>
+<body>
+    <h1>Account Summary</h1>
+    <p><a href="/">Back to Dashboard</a></p>
+    <ul>
+        {% for key, value in summary.items() %}
+            <li>{{ key }}: {{ value }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

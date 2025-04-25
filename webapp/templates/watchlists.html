@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Watchlists</h2>
+
+<div class="col col-sm-8">
+    {% if watchlists %}
+        <table class="table table-striped">
+            {% for watchlist in watchlists %}
+            <tr>
+                <td>
+                    <a href="/watchlists/{{ watchlist['id'] }}">{{ watchlist['id'] }}</a>
+                </td>
+                <td>{{ watchlist['name'] }}</td>
+                <td>
+                    <a href="/watchlists/{{ watchlist['id'] }}/delete">delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% endif %}
+</div>
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#watchlistModal">
+     Create Watchlist
+</button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="watchlistModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Add Watchlist</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <label>Watchlist Name</label>
+            <input id="name" type="text" class="form-control" />
+            <label>Symbols (comma separated eg. AAPL,GOOG)</label>
+            <textarea id="symbols" class="form-control"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="create-watchlist" type="button" class="btn btn-primary">Create Watchlist</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    // Handle form submission
+    $('#create-watchlist').on('click', function (e) {
+      e.preventDefault(); // Prevent the default form submission
+  
+      // Serialize the form data
+      const name = $("#name").val();
+      const symbols = $("#symbols").val();
+  
+      const payload = {
+        "name": name,
+        "symbols": symbols
+    };
+
+      // Send the form data to the backend using AJAX
+      $.ajax({
+        type: 'POST',
+        url: '/watchlists/create', // Replace with your backend URL
+        contentType: 'application/json', // Set content type to JSON
+        data: JSON.stringify(payload), // Convert payload to JSON string
+        success: function (response) {
+          // Handle success response
+          console.log('Response from server:', response);
+  
+          // Close the modal
+          $('#watchlistModal').modal('hide');
+        },
+        error: function (xhr, status, error) {
+          // Handle error response
+          console.error('Error:', error);
+          alert('An error occurred while submitting the form.');
+        },
+      });
+    });
+  });
+
+</script>
+
+{% endblock %}

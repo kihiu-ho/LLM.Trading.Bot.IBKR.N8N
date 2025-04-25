@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IBKR Login</title>
+</head>
+<body>
+    <h1>Login to Interactive Brokers</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <form method="POST">
+        <p>Ensure the IBKR Gateway is running and authenticated at <a href="https://localhost:5055">https://localhost:5055</a>.</p>
+        <button type="submit">Check Authentication</button>
+    </form>
+</body>
+</html>

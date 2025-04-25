@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>Orders</title></head>
+<body>
+    <h1>Current Orders</h1>
+    <p><a href="/">Back to Dashboard</a> | <a href="/order">Place New Order</a></p>
+    <table border="1">
+        <tr><th>Order ID</th><th>Symbol</th><th>Side</th><th>Quantity</th><th>Status</th><th>Action</th></tr>
+        {% for order in orders %}
+            <tr>
+                <td>{{ order.orderId }}</td>
+                <td>{{ order.symbol }}</td>
+                <td>{{ order.side }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.status }}</td>
+                <td><a href="/order/cancel/{{ order.orderId }}">Cancel</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

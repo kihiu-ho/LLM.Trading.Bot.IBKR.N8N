@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Watchlists</h2>
+
+<div class="col col-sm-8">
+    {% if watchlist %}
+        <table class="table table-striped">
+            {% for instrument in watchlist['instruments'] %}
+            <tr>
+                <td>
+                    <a href="/contract/{{ instrument['conid']}}/365d">{{ instrument['name'] }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% endif %}
+</div>
+
+
+{% endblock %}

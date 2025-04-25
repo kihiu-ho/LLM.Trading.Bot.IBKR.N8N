@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Place Order</title></head>
+<body>
+    <h1>Place Order</h1>
+    <p><a href="/">Back to Dashboard</a></p>
+    <form method="POST">
+        <label>Contract ID: <input type="number" name="conid" required></label><br>
+        <label>Order Type: <select name="orderType"><option value="LMT">Limit</option><option value="MKT">Market</option></select></label><br>
+        <label>Price: <input type="number" step="0.01" name="price" required></label><br>
+        <label>Quantity: <input type="number" name="quantity" required></label><br>
+        <label>Side: <select name="side"><option value="BUY">Buy</option><option value="SELL">Sell</option></select></label><br>
+        <label>Time in Force: <select name="tif"><option value="GTC">Good Till Cancel</option><option value="DAY">Day</option></select></label><br>
+        <button type="submit">Place Order</button>
+    </form>
+</body>
+</html>
